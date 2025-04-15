@@ -13,6 +13,10 @@ module.exports = {
           module: /@walletconnect/,
           message: /Failed to parse source map/,
         },
+        {
+          module: /@bitauth\/libauth/,
+          message: /Failed to parse source map/,
+        },
       ],
     },
   },
