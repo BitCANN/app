@@ -1,7 +1,28 @@
 import React from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Select, MenuItem, FormControl, InputLabel, Typography } from '@mui/material';
+import { useElectrum } from '../hooks/useElectrum';
+import { useWallet } from '../hooks/useWallet';
+import { ConnectButton } from './ConnectButton';
+import { themeConstants } from '../theme/constants';
+import { electrumServers } from '../config';
 
 const TopNavBar = () => {
+  const { getClient } = useElectrum();
+  const { 
+    address, 
+    isInitializing, 
+    connect, 
+    disconnect,
+    // signTransaction
+  } = useWallet();
+  const [selectedServer, setSelectedServer] = React.useState(electrumServers[0].url);
+
+  const handleServerChange = async (event: any) => {
+    setSelectedServer(event.target.value);
+    // Reconnect with the new server
+    await getClient(event.target.value);
+  };
+
   return (
     <Box
       sx={{
@@ -29,6 +50,91 @@ const TopNavBar = () => {
         >
           BitCANN
         </Button>
+      </Box>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+        <Box sx={{ minWidth: 250 }}>
+          <FormControl fullWidth size="small">
+            <InputLabel id="server-select-label" sx={{ color: 'white' }}>Electrum Server</InputLabel>
+            <Select
+              labelId="server-select-label"
+              value={selectedServer}
+              label="Electrum Server"
+              onChange={handleServerChange}
+              sx={{ 
+                color: 'white',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.2)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.4)',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(255, 255, 255, 0.6)',
+                },
+              }}
+            >
+              {electrumServers.map((server) => (
+                <MenuItem key={server.url} value={server.url}>
+                  {server.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        {address ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end',
+              }}
+            >
+              <Typography
+                sx={{
+                  color: themeConstants.colors.text.secondary,
+                  fontSize: '0.75rem',
+                  fontFamily: themeConstants.typography.fontFamily
+                }}
+              >
+                Connected Address
+              </Typography>
+              <Typography
+                sx={{
+                  color: themeConstants.colors.text.primary,
+                  fontSize: '0.75rem',
+                  fontFamily: themeConstants.typography.fontFamily,
+                  background: 'rgba(21, 126, 255, 0.05)',
+                  padding: '2px 8px',
+                  borderRadius: themeConstants.borderRadius.small,
+                  border: '1px solid rgba(21, 126, 255, 0.2)',
+                  maxWidth: '200px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {address}
+              </Typography>
+            </Box>
+            <ConnectButton
+              onClick={disconnect}
+              sx={{ minWidth: 'auto', padding: '6px 12px' }}
+            >
+              Disconnect
+            </ConnectButton>
+          </Box>
+        ) : (
+          <ConnectButton 
+            onClick={connect}
+            disabled={isInitializing}
+            sx={{ minWidth: 'auto', padding: '6px 12px' }}
+          >
+            {isInitializing ? "Initializing..." : "Connect Wallet"}
+          </ConnectButton>
+        )}
       </Box>
     </Box>
   );

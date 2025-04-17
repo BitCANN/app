@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": false,
   "dependencies": {
+    "@bitauth/libauth": "^3.1.0-next.4",
     "@electrum-cash/network": "^4.1.1",
     "@electrum-cash/protocol": "^2.2.1-r8564577559",
     "@emotion/react": "^11.13.5",
@@ -21,7 +22,7 @@
     "ajv": "^8.12.0",
     "ajv-keywords": "^5.1.0",
     "axios": "^1.7.8",
-    "@bitauth/libauth": "^3.1.0-next.4",
+    "buffer": "^6.0.3",
     "cashscript": "^0.11.0-next.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

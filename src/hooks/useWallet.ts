@@ -12,7 +12,7 @@ const wcMetadataBCH = {
 };
 
 const network = "mainnet";
-const connectedChain = network == "mainnet" ? "bch:bitcoincash" : "bch:bchtest";
+const connectedChain = network === "mainnet" ? "bch:bitcoincash" : "bch:bchtest";
 
 const namespaces = {
   bch: {
@@ -22,7 +22,7 @@ const namespaces = {
   },
 };
 
-export const useWalletBCH = () => {
+export const useWallet = () => {
   const [signClient, setSignClient] = useState<SignClient | null>(null);
   const [lastSession, setSession] = useState(null);
   const [walletConnectModal, setWalletConnectModal] = useState<WalletConnectModal | null>(null);
@@ -95,7 +95,7 @@ export const useWalletBCH = () => {
         signClient.core.relayer.events.removeAllListeners();
       }
     };
-  }, []);
+  });
 
   const handleSessionDelete = (session) => {
     console.log("Session deleted:", session);
@@ -218,7 +218,8 @@ export const useWalletBCH = () => {
     } else {
       setAddress('');
     }
-  }, [lastSession, signClient]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastSession, signClient,]);
 
   useEffect(() => {
     if (address !== '') {

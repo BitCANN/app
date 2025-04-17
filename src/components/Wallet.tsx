@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
 import { Box, Typography, Stack } from '@mui/material';
 import { themeConstants } from '../theme/constants';
-import { useWalletBCH } from '../hooks/useWallet';
+import { useWallet } from '../hooks/useWallet';
 import { ConnectButton } from './ConnectButton';
 import { useElectrum } from '../hooks/useElectrum';
+import { WalletProps } from '../types'; 
 
-interface WalletProps {
-  onAddressUpdate: (address: string) => void;
-}
 export const Wallet: React.FC<WalletProps> = ({ onAddressUpdate }) => {
   const { 
     address, 
@@ -15,7 +13,7 @@ export const Wallet: React.FC<WalletProps> = ({ onAddressUpdate }) => {
     connect, 
     disconnect,
     signTransaction
-  } = useWalletBCH();
+  } = useWallet();
 
   const { fetchUTXOs } = useElectrum();
 

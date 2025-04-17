@@ -6,9 +6,10 @@ interface ConnectButtonProps {
   children?: React.ReactNode;
   fullWidth?: boolean;
   disabled?: boolean;
+  sx?: any;
 }
 
-export const ConnectButton = ({ onClick, children = 'Connect with WalletConnect', fullWidth = true, disabled }: ConnectButtonProps) => {
+export const ConnectButton = ({ onClick, children = 'Connect with WalletConnect', fullWidth = true, disabled, sx }: ConnectButtonProps) => {
   return (
     <Button
       onClick={onClick}
@@ -25,7 +26,8 @@ export const ConnectButton = ({ onClick, children = 'Connect with WalletConnect'
         '&:hover': {
           background: themeConstants.colors.primary.gradientHover,
           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-        }
+        },
+        ...sx
       }}
     >
       {children}
