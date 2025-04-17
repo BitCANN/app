@@ -15,6 +15,8 @@ const TopNavBar = () => {
     disconnect,
     // signTransaction
   } = useWallet();
+
+  console.log('isInitializing', isInitializing)
   const [selectedServer, setSelectedServer] = React.useState(electrumServers[0].url);
 
   const handleServerChange = async (event: any) => {

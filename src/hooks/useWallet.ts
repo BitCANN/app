@@ -37,15 +37,21 @@ export const useWallet = () => {
 
   // Setup WalletConnect client and event handlers on initial render
   useEffect(() => {
+    let isMounted = true;
+    
     const initWalletConnect = async () => {
       try {
-        setIsInitializing(true);
+        if (isMounted) {
+          setIsInitializing(true);
+        }
         const client = await SignClient.init({
           projectId: projectId,
           relayUrl: 'wss://relay.walletconnect.com',
           metadata: wcMetadataBCH
         });
-        setSignClient(client);
+        if (isMounted) {
+          setSignClient(client);
+        }
 
         const modal = new WalletConnectModal({
           projectId: projectId,
@@ -56,7 +62,9 @@ export const useWallet = () => {
           },
           explorerExcludedWalletIds: 'ALL',
         });
-        setWalletConnectModal(modal);
+        if (isMounted) {
+          setWalletConnectModal(modal);
+        }
 
         // Safely get the last session
         try {
@@ -64,7 +72,9 @@ export const useWallet = () => {
           if (sessions.length > 0) {
             const session = sessions[sessions.length - 1];
             if (!isSessionExpired(session)) {
-              setSession(session);
+              if (isMounted) {
+                setSession(session);
+              }
             } else {
               console.log("Session is expired");
             }
@@ -81,7 +91,9 @@ export const useWallet = () => {
       } catch (error) {
         console.log("Failed to initialize WalletConnect:", error);
       } finally {
-        setIsInitializing(false);
+        if (isMounted) {
+          setIsInitializing(false);
+        }
       }
     };
 
@@ -89,13 +101,14 @@ export const useWallet = () => {
 
     // Cleanup event listeners on unmount
     return () => {
+      isMounted = false;
       if (signClient) {
         signClient.off('session_delete', handleSessionDelete);
         signClient.off('session_expire', handleSessionExpire);
         signClient.core.relayer.events.removeAllListeners();
       }
     };
-  });
+  }, []); // Empty dependency array since this should only run once
 
   const handleSessionDelete = (session) => {
     console.log("Session deleted:", session);
