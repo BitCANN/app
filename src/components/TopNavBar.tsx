@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { Box, Button, Select, MenuItem, FormControl, InputLabel, Typography } from '@mui/material';
-// import { useElectrum } from '../hooks/useElectrum';
+import { useElectrum } from '../hooks/useElectrum';
 import { useWalletConnect } from '../hooks/useWalletConnect';
 import { ConnectButton } from './ConnectButton';
 import { themeConstants } from '../theme/constants';
 import { electrumServers } from '../config';
 
 const TopNavBar = () => {
-  // const { getElectrumClient } = useElectrum();
+  const { getElectrumClient } = useElectrum();
   const { 
     address, 
     isInitializing, 
@@ -20,14 +20,14 @@ const TopNavBar = () => {
 
   useEffect(() => {
     // Initialize with the default server URL
-    // getElectrumClient(electrumServers[0].url);
+    getElectrumClient(electrumServers[0].url);
   }, []);
 
   const handleServerChange = async (event: any) => {
     const newServer = event.target.value;
     setSelectedServer(newServer);
     console.log('newServer', newServer)
-    // await getElectrumClient(newServer);
+    await getElectrumClient(newServer);
   };
 
   return (

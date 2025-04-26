@@ -18,8 +18,8 @@ export const useElectrum = () => {
 
     const ec = new ElectrumClient(
       'BitCANN',
-      // '1.5.3',
-      '1.4.1',
+      '1.5.3',
+      // '1.4.1',
       serverUrl
     );
 

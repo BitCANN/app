@@ -1,24 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Grid, Box, TextField, Button, Typography, Paper, Alert, CircularProgress } from '@mui/material';
 import { createManager, ManagerConfig } from '@bitcann/core';
-// import { useElectrum } from './hooks/useElectrum';
+import { useElectrum } from './hooks/useElectrum';
 import { domainTokenCategory, minStartingBid, minBidIncreasePercentage, inactivityExpiryTime, minWaitTime, maxPlatformFeePercentage, electrumServers } from './config';
 
 export const App = () => {
 	const [searchDomain, setSearchDomain] = useState('');
-	const [searchResult, setSearchResult] = useState(null);
+	const [searchResult, setSearchResult] = useState<string[] | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [bitcannClient, setBitcannClient] = useState<any>(null);
-	// const { electrumClient, getElectrumClient } = useElectrum();
+	const { electrumClient, getElectrumClient } = useElectrum();
 
 	useEffect(() => {
 		const connect = async () => {
-			// console.log('electrumClient', electrumClient);
-			// if (!electrumClient) {
-			// 	await getElectrumClient(electrumServers[0].url);
-			// 	return;
-			// }
+			if (!electrumClient) {
+				await getElectrumClient(electrumServers[0].url);
+				return;
+			}
 
 			const options: ManagerConfig = {
 				category: domainTokenCategory,
@@ -27,7 +26,7 @@ export const App = () => {
 				inactivityExpiryTime: inactivityExpiryTime,
 				minWaitTime: minWaitTime,
 				maxPlatformFeePercentage: maxPlatformFeePercentage,
-				// networkProvider: electrumClient
+				networkProvider: electrumClient
 			};
 			
 			// Create new BitCANN client with the updated Electrum client
@@ -36,8 +35,7 @@ export const App = () => {
 		};
 
 		connect();
-	// }, [electrumClient]); // Re-run when electrumClient changes
-	}, []); // Re-run when electrumClient changes
+	}, [electrumClient]); // Re-run when electrumClient changes
 
 	const handleSearch = async () => {
 		if (!searchDomain.trim()) {
@@ -55,15 +53,10 @@ export const App = () => {
 		setSearchResult(null);
 
 		try {
-			console.log('searchDomain', searchDomain);
-
 			const result = await bitcannClient.getRecords(searchDomain);
-			console.log('Records:', result);
-			
-			// setSearchResult(JSON.stringify({ ...result }, null, 2));
+			setSearchResult(result);
 		} catch (error) {
 			setError(error instanceof Error ? error.message : 'An error occurred while searching');
-			console.error('Error searching domain:', error);
 		} finally {
 			setIsLoading(false);
 		}
@@ -137,29 +130,11 @@ export const App = () => {
 					}}>
 						<Typography variant="h6" gutterBottom>Domain Information</Typography>
 						<Grid container spacing={2}>
-							<Grid item xs={12}>
-								<Typography variant="subtitle2" color="grey.400">Domain Name:</Typography>
-								<Typography mb={2}>{searchResult.name || searchDomain}</Typography>
-							</Grid>
-							<Grid item xs={12}>
-								<Typography variant="subtitle2" color="grey.400">Full Response:</Typography>
-								<Box component="pre" sx={{ 
-									overflow: 'auto',
-									bgcolor: 'rgba(0, 0, 0, 0.2)',
-									p: 2,
-									borderRadius: 1,
-									'&::-webkit-scrollbar': {
-										width: '8px',
-										height: '8px',
-									},
-									'&::-webkit-scrollbar-thumb': {
-										backgroundColor: 'rgba(255, 255, 255, 0.2)',
-										borderRadius: '4px',
-									},
-								}}>
-									{JSON.stringify(searchResult, null, 2)}
-								</Box>
-							</Grid>
+							{searchResult.map((item, index) => (
+								<Grid item xs={12} key={index}>
+									<Typography variant="body2" color="grey.400">{item}</Typography>
+								</Grid>
+							))}
 						</Grid>
 					</Paper>
 				)}
