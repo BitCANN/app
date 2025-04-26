@@ -1,37 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Grid, Box, TextField, Button, Typography, Paper, Alert, CircularProgress } from '@mui/material';
-import { createManager, ManagerConfig } from 'bitcann';
-import { useElectrum } from './hooks/useElectrum';
-import { domainTokenCategory, minStartingBid, minBidIncreasePercentage, inactivityExpiryTime, minWaitTime, maxPlatformFeePercentage } from './config';
+import { createManager, ManagerConfig } from '@bitcann/core';
+// import { useElectrum } from './hooks/useElectrum';
+import { domainTokenCategory, minStartingBid, minBidIncreasePercentage, inactivityExpiryTime, minWaitTime, maxPlatformFeePercentage, electrumServers } from './config';
 
 export const App = () => {
 	const [searchDomain, setSearchDomain] = useState('');
 	const [searchResult, setSearchResult] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const { getClient } = useElectrum();
 	const [bitcannClient, setBitcannClient] = useState<any>(null);
-  const [client, setClient] = useState<any>(null);
+	// const { electrumClient, getElectrumClient } = useElectrum();
 
-  useEffect(() =>{
-    const connect = async () => {
-      const client = await getClient()
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setClient(client);
+	useEffect(() => {
+		const connect = async () => {
+			// console.log('electrumClient', electrumClient);
+			// if (!electrumClient) {
+			// 	await getElectrumClient(electrumServers[0].url);
+			// 	return;
+			// }
 
-      const options: ManagerConfig = {
+			const options: ManagerConfig = {
 				category: domainTokenCategory,
 				minStartingBid: minStartingBid,
 				minBidIncreasePercentage: minBidIncreasePercentage,
 				inactivityExpiryTime: inactivityExpiryTime,
 				minWaitTime: minWaitTime,
 				maxPlatformFeePercentage: maxPlatformFeePercentage,
-				networkProvider: client
+				// networkProvider: electrumClient
 			};
-			setBitcannClient(createManager(options));
-    }
-    connect()
-  })
+			
+			// Create new BitCANN client with the updated Electrum client
+			const newBitcannClient = createManager(options);
+			setBitcannClient(newBitcannClient);
+		};
+
+		connect();
+	// }, [electrumClient]); // Re-run when electrumClient changes
+	}, []); // Re-run when electrumClient changes
 
 	const handleSearch = async () => {
 		if (!searchDomain.trim()) {
@@ -51,25 +57,10 @@ export const App = () => {
 		try {
 			console.log('searchDomain', searchDomain);
 
-      const lutxos = await client.getUtxos('bitcoincash:qznn6uyfuj9t7da5mv2ul66t63tmtgggruzlpen6ql');
-			console.log('utxos', lutxos);
-
-      const auction = await bitcannClient.createAuctionTransaction({
-        name: 'a', 
-        amount: 10000,
-        address: 'bitcoincash:qznn6uyfuj9t7da5mv2ul66t63tmtgggruzlpen6ql'
-      });
-
-      console.log('auction', auction);
-
-			const result = await bitcannClient.getDomain(searchDomain);
-			console.log('Domain Address:', result.address);
-			console.log('Domain Contract:', result.contract);
-
-			const utxos = await client.getUtxos(result.address);
-			console.log('utxos', utxos);
+			const result = await bitcannClient.getRecords(searchDomain);
+			console.log('Records:', result);
 			
-			setSearchResult(JSON.stringify({ ...result }, null, 2));
+			// setSearchResult(JSON.stringify({ ...result }, null, 2));
 		} catch (error) {
 			setError(error instanceof Error ? error.message : 'An error occurred while searching');
 			console.error('Error searching domain:', error);
@@ -118,10 +109,9 @@ export const App = () => {
 				<Button 
 					variant="contained" 
 					onClick={handleSearch}
-					disabled={isLoading}
 					sx={{ minWidth: '120px' }}
 				>
-					{isLoading ? <CircularProgress size={24} color="inherit" /> : 'Search'}
+					{'Search'}
 				</Button>
 			</Box>
 

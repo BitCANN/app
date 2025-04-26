@@ -1,28 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Button, Select, MenuItem, FormControl, InputLabel, Typography } from '@mui/material';
-import { useElectrum } from '../hooks/useElectrum';
-import { useWallet } from '../hooks/useWallet';
+// import { useElectrum } from '../hooks/useElectrum';
+import { useWalletConnect } from '../hooks/useWalletConnect';
 import { ConnectButton } from './ConnectButton';
 import { themeConstants } from '../theme/constants';
 import { electrumServers } from '../config';
 
 const TopNavBar = () => {
-  const { getClient } = useElectrum();
+  // const { getElectrumClient } = useElectrum();
   const { 
     address, 
     isInitializing, 
     connect, 
     disconnect,
-    // signTransaction
-  } = useWallet();
+  } = useWalletConnect();
 
   console.log('isInitializing', isInitializing)
   const [selectedServer, setSelectedServer] = React.useState(electrumServers[0].url);
 
+  useEffect(() => {
+    // Initialize with the default server URL
+    // getElectrumClient(electrumServers[0].url);
+  }, []);
+
   const handleServerChange = async (event: any) => {
-    setSelectedServer(event.target.value);
-    // Reconnect with the new server
-    await getClient(event.target.value);
+    const newServer = event.target.value;
+    setSelectedServer(newServer);
+    console.log('newServer', newServer)
+    // await getElectrumClient(newServer);
   };
 
   return (

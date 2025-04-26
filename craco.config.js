@@ -38,6 +38,10 @@ module.exports = {
           module: /cashscript/,
           message: /Failed to parse source map/,
         },
+        {
+          module: /@bitcann\/core/,
+          message: /Failed to parse source map/,
+        },
       ],
     },
   },

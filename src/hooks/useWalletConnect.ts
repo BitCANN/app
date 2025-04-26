@@ -22,7 +22,7 @@ const namespaces = {
   },
 };
 
-export const useWallet = () => {
+export const useWalletConnect = () => {
   const [signClient, setSignClient] = useState<SignClient | null>(null);
   const [lastSession, setSession] = useState(null);
   const [walletConnectModal, setWalletConnectModal] = useState<WalletConnectModal | null>(null);
