@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Grid, Box, TextField, Button, Typography, Paper, Alert, CircularProgress } from '@mui/material';
-import { createManager, ManagerConfig } from '@bitcann/core';
+import { BitCANNManager, ManagerConfig } from '@bitcann/core';
 import { useElectrum } from './hooks/useElectrum';
 import { domainTokenCategory, minStartingBid, minBidIncreasePercentage, inactivityExpiryTime, minWaitTime, maxPlatformFeePercentage, electrumServers } from './config';
 
@@ -30,7 +30,7 @@ export const App = () => {
 			};
 			
 			// Create new BitCANN client with the updated Electrum client
-			const newBitcannClient = createManager(options);
+			const newBitcannClient = new BitCANNManager(options);
 			setBitcannClient(newBitcannClient);
 		};
 
@@ -53,7 +53,7 @@ export const App = () => {
 		setSearchResult(null);
 
 		try {
-			const result = await bitcannClient.getRecords(searchDomain);
+			const result = await bitcannClient.getRecords({name: searchDomain});
 			setSearchResult(result);
 		} catch (error) {
 			setError(error instanceof Error ? error.message : 'An error occurred while searching');
